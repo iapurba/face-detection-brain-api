@@ -9,26 +9,26 @@ const handleSignup = (req, res, db, bcrypt) => {
       password: hash,
       email: email
     })
-    .into('login')
-    .returning('email')
-    .then(() => {
-      return trx('users')
-        .returning('*')
-        .insert({
-          name: name,
-          email: email,
-          joined: new Date()
+      .into('login')
+      .returning('email')
+      .then(() => {
+        return trx('users')
+          .returning('*')
+          .insert({
+            name: name,
+            email: email,
+            joined: new Date()
+          })
+          .then(user => {
+            res.json(user[0]);
+          })
       })
-      .then(user => {
-        res.json(user[0]);
-      })
-    })
-    .then(trx.commit)
-    .catch(trx.rollback)
+      .then(trx.commit)
+      .catch(trx.rollback)
   })
-  .catch(err => res.status(400).json('unable to sign up'));  
+    .catch(err => res.status(400).json('unable to sign up'));
 }
 
 module.exports = {
-  handleSignup: handleSignup
+  handleSignup
 };
