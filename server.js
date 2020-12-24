@@ -9,6 +9,7 @@ const signin = require('./controllers/signin');
 const signup = require('./controllers/signup');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
+const auth = require('./controllers/authorization');
 
 
 const db = knex({
@@ -22,11 +23,12 @@ app.use(cors());
 app.use(morgan('combined'));
 
 app.get('/', (req, res) => { res.send('It is working.') });
-app.post('/signin', (req, res) => { signin.handleSignin(req, res, db, bcrypt) });
+app.post('/signin', signin.signinAuthentication(db, bcrypt));
 app.post('/signup', (req, res) => { signup.handleSignup(req, res, db, bcrypt) });
-app.get('/profile/:id', (req, res) => { profile.handleProfileGet(req, res, db) });
-app.put('/image', (req, res) => { image.handleImage(req, res, db) });
-app.post('/imageurl', (req, res) => { image.handleApiCall(req, res) });
+app.get('/profile/:id', auth.requireAuth, (req, res) => { profile.handleProfileGet(req, res, db) });
+app.post('/profile/:id', auth.requireAuth, (req, res) => { profile.handleProfileUpdate(req, res, db) });
+app.put('/image', auth.requireAuth, (req, res) => { image.handleImage(req, res, db) });
+app.post('/imageurl', auth.requireAuth, (req, res) => { image.handleApiCall(req, res) });
 
 
 const PORT = process.env.PORT || 3000;
