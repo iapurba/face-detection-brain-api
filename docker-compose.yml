@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # Backend API
+  face-detection-brain-api:
+    container_name: backend
+    build: ./
+    command: npm start
+    working_dir: /face-detection-brain-api
+    environment:
+      POSTGRES_URI: postgres://apurba:cse164011@postgres:5432/smart-brain-docker
+      REDIS_URI: redis://redis:6379
+    links:
+      - postgres
+      - redis
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/face-detection-brain-api
+
+  # Postgres
+  postgres:
+    build: ./postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: apurba
+      POSTGRES_PASSWORD: cse164011
+      POSTGRES_DB: smart-brain-docker
+
+  # Redis
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
