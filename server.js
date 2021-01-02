@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
 const morgan = require('morgan');
 const knex = require('knex')
+const compression = require('compression')
 
 const signin = require('./controllers/signin');
 const signup = require('./controllers/signup');
@@ -21,6 +22,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 app.use(morgan('combined'));
+app.use(compression());
 
 app.get('/', (req, res) => { res.send('It is working.') });
 app.post('/signin', signin.signinAuthentication(db, bcrypt));
